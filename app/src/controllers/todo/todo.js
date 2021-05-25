@@ -34,11 +34,10 @@ if(config.usefake){
 }
 
 // Register homepage
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     
     // Get all todos from model
-    const todos = todoStore.getTodos();
-
+    const todos = await todoStore.getTodos();
     if(req.accepts('text/html')){
 
         // Create a variable to hold html string
