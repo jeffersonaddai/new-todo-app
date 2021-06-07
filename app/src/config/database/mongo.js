@@ -1,27 +1,24 @@
+// Require the config file
 const config = require('../config');
+
+// Require mongodb client
 const MongoClient = require('mongodb').MongoClient;
 
+// Set a global variable to hold the database instance
 global._mongoDb = null;
 
-if(!config.useMongoose){
-    module.exports = function(){
-        
-        return MongoClient.connect('mongodb://localhost:27017/mydb', 
+
+module.exports = function(){   
+    return MongoClient.connect(config.mongodbUrl, 
         { useUnifiedTopology: true }).then((client)=>{
-            global._mongoDb = client.db();
+            _mongoDb = client.db();
         })
         .catch((err)=>{
-            console.log('Could not connect to mongodb',err);
+            console.log('Could not connect to mongodb', err);
             return Promise.reject(err);
         }).then(()=>{
-    
-        });
-    };
-}
 
-else{
-    const mongoose = require("mongoose");
-    mongoose.connect("mongodb://localhost/todo", {useNewUrlParser: true, useUnifiedTopology: true});
-    const db = mongoose.connection;
-    db.on()
-}
+        });
+};
+
+

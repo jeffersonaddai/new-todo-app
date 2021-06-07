@@ -1,41 +1,56 @@
 // import formatDate method from utils
-const {formatDate} = require('../../utils/formatUtils');
+// const {formatDate} = require('../../utils/formatUtils');
+const config = require('../../../config/config');
 
 // Create TodoStore class to handle store 
 class TodoStore{
     constructor(todos){
+        console.log("in-memory todoStore loaded!")
         this.todos = [];
     }
 
+    init(){
+
+        // If usefake variable in config is true populate fake data in todoStore
+        if(config.usefake){
+            
+            // Create fake data from the Todo object
+            let fakeTodo1 = new Todo(4132, 'Create Site', Date.now(), 'work', 'Create the website');
+            let fakeTodo2 = new Todo(3432, 'Wash', Date.now(), 'cooking', 'Wash the utensils');
+            
+            // Add fake data to todoStore by callig the todoStore addTodo method
+            this.addTodo(fakeTodo1);
+            this.addTodo(fakeTodo2);
+
+        }
+    }
+
     // Method to get all todos from store
-    getTodos(){
+    async getTodos(){
 
         // 
         const newTodos = this.todos.slice(0);
-        for (const todo of newTodos) {
-            todo.date = formatDate(new Date(todo.date))
-        }
+
         return newTodos;
     }
 
     // adds new todo to database
-    addTodo(todo){
-        
+    async addTodo(todo){
+        todo.id = Date.now();
         // Push todo into storage
         this.todos.push(todo);
     }
 
     // Deletes todo from databse
-    deleteTodo(todo){
+    async deleteTodo(todo){
         // Get the todo object to be deleted
-        let foundTodo = this.getTodo(todo.id);
-
+        let foundTodo = await this.getTodo(todo.id);
         // Check if todo was found in storage
         if(foundTodo !== null){
 
             // Remove todo from storage
             this.todos = this.todos.filter(localTodo => {
-                return localTodo != foundTodo;
+                return localTodo.id != foundTodo.id;
             })
             return true;
         }else{
@@ -46,7 +61,7 @@ class TodoStore{
 
     }
 
-    getTodo(todoId){
+    async getTodo(todoId){
 
         // Loop through the todo database
         for(let localTodo of this.todos){
@@ -54,8 +69,6 @@ class TodoStore{
             // Check if todo id matches the current todo
             if(todoId == localTodo.id){
 
-                // format the date of the matched todo
-                localTodo.date = formatDate(new Date(localTodo.date));
 
                 // return the matched todo
                 return localTodo;
@@ -67,41 +80,30 @@ class TodoStore{
     }
 
     // Updates a todo object in the database
-    editTodo(id, todo){
+    async editTodo(id, newTodo){
 
         // Declare a variable to hold the found todo that has the id provided in the parameter
-        const foundTodo = this.getTodo(id);
+        const tempStore = [];
 
-        // Check if an object match was found
-        if(foundTodo){
-
-            // Update the attributes of the foundTodo with the newTodo object's attributes
-            foundTodo.title = todo.title;
-            foundTodo.type = todo.type;
-            foundTodo.date = todo.date;
-            foundTodo.description = todo.description;
-
-            // Return true after updating
-            return true;
+        for(const todo of this.todos){
+            if(id == todo.id){
+                tempStore.push(newTodo)
+            }else{
+                tempStore.push(todo)
+            }
         }
+        this.todos = tempStore;
+        // Check if an object match was found
 
         // If id does not find any match return false
         return false;
 
     }
 
+    
+
 }
 
-class Todo{
-    constructor(id, title, date, type, description){
-        this.id = id;
-        this.title = title;
-        this.date = date;
-        this.type = type;
-        this.description = description;
-    }
-}
 
 
 module.exports.TodoStore = TodoStore;
-module.exports.Todo = Todo;

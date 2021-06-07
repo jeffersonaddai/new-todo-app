@@ -1,0 +1,359 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "This is the api server for the amalitech transcript management system.",
+      "version": "1.0.0",
+      "title": "TMS API",
+      "contact": {
+        "email": "jefferson@amalitech.org"
+      },
+      "license": {
+        "name": "Apache 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+    },
+    "host": "localhost:3000",
+    "basePath": "",
+    "tags": [
+      {
+        "name": "admins",
+        "description": "Secured Admin-only calls"
+      },
+      {
+        "name": "user",
+        "description": "Operations available to regular users"
+      },
+      {
+        "name": "auth",
+        "description": "Operations on authentication. (Login)"
+      }
+    ],
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/admin/users": {
+        "get": {
+          "tags": [
+            "admins"
+          ],
+          "summary": "gets all users",
+          "description": "By passing in the appropriate options, you can get all users info.\n",
+          "operationId": "getUsers",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "results of all the users in the database",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            },
+            "400": {
+              "description": "bad input parameter"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "admins"
+          ],
+          "summary": "Creates a new user",
+          "operationId": "createUser",
+          "consumes": [
+            "application/json",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "User object that needs to be created",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "400": {
+              "description": "Invalid input"
+            },
+            "401": {
+              "description": "Unathorized"
+            }
+          },
+          "security": [
+            {
+              "api_key": []
+            }
+          ]
+        }
+      },
+      "/admin/user/{user_id}": {
+        "get": {
+          "tags": [
+            "admins"
+          ],
+          "summary": "gets details of a user",
+          "description": "By passing in the appropriate options, you can get detail info about a user.",
+          "operationId": "getUser",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "description": "ID of user who's info is requested for",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "details of a user",
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            },
+            "400": {
+              "description": "bad input parameter"
+            }
+          },
+          "security": [
+            {
+              "api_key": []
+            }
+          ]
+        },
+        "put": {
+          "tags": [
+            "admins"
+          ],
+          "summary": "Updates a user with form data",
+          "description": "Update a particular user with form data",
+          "operationId": "updateUser",
+          "consumes": [
+            "application/json",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "description": "ID of user that needs to be updated",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "firstname",
+              "in": "formData",
+              "description": "Updated firstname of the user",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "lastname",
+              "in": "formData",
+              "description": "Updated lastname of the user",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "email",
+              "in": "formData",
+              "description": "Updated email of the user",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "password",
+              "in": "formData",
+              "description": "Updated password of the user",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "user updated"
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "401": {
+              "description": "unauthorized"
+            },
+            "404": {
+              "description": "not found"
+            }
+          },
+          "security": [
+            {
+              "api_key": []
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "admins"
+          ],
+          "summary": "Deletes a user",
+          "operationId": "deleteUser",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "api_key",
+              "in": "header",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "user_id",
+              "in": "path",
+              "description": "User id to delete",
+              "required": true,
+              "type": "integer",
+              "format": "int64"
+            }
+          ],
+          "responses": {
+            "404": {
+              "description": "User not found"
+            }
+          },
+          "security": [
+            {
+              "api_key": []
+            }
+          ]
+        }
+      },
+      "/auth/login": {
+        "post": {
+          "tags": [
+            "admins"
+          ],
+          "summary": "Logs user in",
+          "operationId": "login",
+          "consumes": [
+            "application/json",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "User object that needs to be created",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Login"
+              }
+            }
+          ],
+          "responses": {
+            "400": {
+              "description": "Invalid input"
+            },
+            "401": {
+              "description": "Unathorized"
+            }
+          }
+        }
+      }
+    },
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    },
+    "definitions": {
+      "Login": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@amalitech.org"
+          },
+          "password": {
+            "type": "string",
+            "example": "user1516"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "firstname",
+          "lastname"
+        ],
+        "properties": {
+          "firstname": {
+            "type": "string",
+            "example": "Jefferson"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "Addai-Poku"
+          },
+          "batchName": {
+            "type": "string",
+            "example": "batch1"
+          },
+          "currentTrack": {
+            "type": "string",
+            "example": "SalesForce"
+          },
+          "role_type": {
+            "type": "string",
+            "example": "user"
+          }
+        }
+      },
+      "Course": {
+        "required": [
+          "courseCode",
+          "courseName"
+        ],
+        "properties": {
+          "courseName": {
+            "type": "string",
+            "example": "Node JS"
+          },
+          "courseCode": {
+            "type": "string",
+            "example": "NODEJS"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    }
+  }

@@ -14,7 +14,7 @@ module.exports = {
             <body>
                 <div class='container'>
                     <div class='row'>
-                        <div class="col-8 mx-auto my-5">
+                        <div class="col-9 mx-auto my-5">
                             <h1 class="text-center">Todo App</h1>
                             ${blockContent}
                         </div>
